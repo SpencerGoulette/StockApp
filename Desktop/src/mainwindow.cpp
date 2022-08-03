@@ -5,7 +5,6 @@
 #include <QPainter>
 #include <QComboBox>
 #include <QAction>
-#include <QLineSeries>
 
 #define WINDOW_TITLE "Early Investor"
 
@@ -99,6 +98,8 @@ void MainWindow::settings(void)
 
 void MainWindow::UpdateChart(QString ticker)
 {
+    bool isLineSeries = false;
+
     mMainChart->removeAllSeries();
 
     if (ticker == "")
@@ -106,24 +107,57 @@ void MainWindow::UpdateChart(QString ticker)
 
     QMap<QString, QStringList> tmpMap;
 
-    tmpMap = mYFAPI.GetTickerData(ticker, "1609459200", "1614470400");
+    std::time_t now = std::time(nullptr);
 
-    QLineSeries * series = new QLineSeries();
+    tmpMap = mYFAPI.GetTickerData(ticker, "0", QString("%1").arg(now));
 
-    for(int row = 0; row < tmpMap["Date"].size(); row++)
-        series->append(QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch(), tmpMap["Close"].at(row).toDouble());
+    if (isLineSeries)
+    {
+        QLineSeries * series = new QLineSeries();
 
-    mMainChart->legend()->hide();
-    mMainChart->addSeries(series);
-    mMainChart->createDefaultAxes();
-    mMainChart->setTitle(QString("%1 Stock").arg(ticker));
+        for(int row = 0; row < tmpMap["Date"].size(); row++)
+            series->append(QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch(), tmpMap["Close"].at(row).toDouble());
 
-    QDateTimeAxis *axisX = new QDateTimeAxis;
-    axisX->setTickCount(10);
-    axisX->setFormat("MM-dd-yyyy");
-    axisX->setTitleText("Date");
-    mMainChart->addAxis(axisX, Qt::AlignBottom);
-    series->attachAxis(axisX);
+        mMainChart->legend()->hide();
+        mMainChart->addSeries(series);
+        mMainChart->createDefaultAxes();
+        mMainChart->setTitle(QString("%1 Stock").arg(ticker));
+
+        QDateTimeAxis *axisX = new QDateTimeAxis;
+        axisX->setTickCount(10);
+        axisX->setFormat("MM-dd-yyyy");
+        axisX->setTitleText("Date");
+        mMainChart->addAxis(axisX, Qt::AlignBottom);
+        series->attachAxis(axisX);
+    }
+    else
+    {
+        QCandlestickSeries *series = new QCandlestickSeries();
+        series->setIncreasingColor(QColor(Qt::green));
+        series->setDecreasingColor(QColor(Qt::red));
+
+        for(int row = 0; row < tmpMap["Date"].size(); row++)
+        {
+            QCandlestickSet * candlestick = new QCandlestickSet(tmpMap["Open"].at(row).toDouble(),
+                                    tmpMap["High"].at(row).toDouble(),
+                                    tmpMap["Low"].at(row).toDouble(),
+                                    tmpMap["Close"].at(row).toDouble(),
+                                    QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch());
+            series->append(candlestick);
+        }
+
+        mMainChart->legend()->hide();
+        mMainChart->addSeries(series);
+        mMainChart->createDefaultAxes();
+        mMainChart->setTitle(QString("%1 Stock").arg(ticker));
+
+        QDateTimeAxis *axisX = new QDateTimeAxis;
+        axisX->setTickCount(10);
+        axisX->setFormat("MM-dd-yyyy");
+        axisX->setTitleText("Date");
+        mMainChart->addAxis(axisX, Qt::AlignBottom);
+        series->attachAxis(axisX);
+    }
 
     mMainChart->update();
 /*    for(unsigned long asset = 0; asset < assetClasses.size(); asset++)

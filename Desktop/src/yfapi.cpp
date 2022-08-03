@@ -61,8 +61,7 @@ QString YahooFinanceAPI::downloadTickerData(QString ticker, QString start, QStri
     // Create url
     QString url = buildURL(ticker, start, end, interval);
 
-    std::time_t now = std::time(nullptr);
-    QString filename = QString("%1.csv").arg(ticker).arg(std::to_string(now).c_str());
+    QString filename = QString("%1.csv").arg(ticker);
 
     filename = downloadFile(url, filename);
 
