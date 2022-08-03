@@ -25,8 +25,6 @@ QMap<QString, QStringList> YahooFinanceAPI::GetTickerData(QString ticker, QStrin
         return QMap<QString, QStringList>();
     }
 
-    std::cout << "Downloaded File" << std::endl;
-
     // Read File
     // Headers
     QMap<QString, QStringList> tmpMap;
@@ -48,14 +46,11 @@ QMap<QString, QStringList> YahooFinanceAPI::GetTickerData(QString ticker, QStrin
         line = file.readLine();
         tmpStr = QString(line.toStdString().c_str());
         dataList.append(tmpStr.split(","));
-        std::cout << i << std::endl;
         for (int header = 0; header < headers.size(); header++)
             mDataMap[ticker][headers.at(header)].append(dataList.at(header));
     }
 
-    std::cout << "Read File" << std::endl;
-
-    //clearTickers();
+    clearTickers();
 
     return mDataMap[ticker];
 }
@@ -67,7 +62,7 @@ QString YahooFinanceAPI::downloadTickerData(QString ticker, QString start, QStri
     QString url = buildURL(ticker, start, end, interval);
 
     std::time_t now = std::time(nullptr);
-    QString filename = QString("%1_%2.csv").arg(ticker).arg(std::to_string(now).c_str());
+    QString filename = QString("%1.csv").arg(ticker).arg(std::to_string(now).c_str());
 
     filename = downloadFile(url, filename);
 
@@ -91,7 +86,7 @@ void YahooFinanceAPI::removeTicker(QString filename)
 
 void YahooFinanceAPI::clearTickers(void)
 {
-    for (int fileNum = mTickers.size(); fileNum >= 0; fileNum++)
+    for (int fileNum = mTickers.size() - 1; fileNum >= 0; fileNum--)
         removeTicker(mTickers.at(fileNum));
 }
 

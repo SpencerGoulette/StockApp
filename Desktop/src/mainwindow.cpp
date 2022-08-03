@@ -110,12 +110,8 @@ void MainWindow::UpdateChart(QString ticker)
 
     QLineSeries * series = new QLineSeries();
 
-    std::cout << tmpMap["Date"].size() << std::endl;
     for(int row = 0; row < tmpMap["Date"].size(); row++)
-    {
         series->append(QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch(), tmpMap["Close"].at(row).toDouble());
-        std::cout << series->at(row).x() << ", " << series->at(row).y() << std::endl;
-    }
 
     mMainChart->legend()->hide();
     mMainChart->addSeries(series);
