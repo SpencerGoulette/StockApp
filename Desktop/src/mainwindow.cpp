@@ -1,7 +1,7 @@
 #include "mainwindow.h"
+#include "ChartView.h"
 
 #include <QHBoxLayout>
-#include <QChartView>
 #include <QPainter>
 #include <QComboBox>
 #include <QAction>
@@ -28,8 +28,9 @@ void MainWindow::setup(void)
     createCentral();
     //createStatus();
 
+    setMinimumSize(720, 480);
     setWindowFlags(windowFlags() | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
-    setWindowState(Qt::WindowFullScreen);
+    setWindowState(Qt::WindowMaximized);
     setWindowTitle(WINDOW_TITLE);
 }
 
@@ -67,9 +68,8 @@ void MainWindow::createCentral(void)
     mStockPicker->addItem("TSLA");
     mStockPicker->addItem("BND");
 
-    QChartView * chartView = new QChartView(mMainChart);
-    chartView->setRubberBand(QChartView::HorizontalRubberBand);
-
+    ChartView * chartView = new ChartView(mMainChart);
+    chartView->setRubberBand(QChartView::RectangleRubberBand);
     chartView->setRenderHint(QPainter::Antialiasing);
 
     connect(mStockPicker, SIGNAL(currentIndexChanged(QString)), this, SLOT(UpdateChart(QString)));
@@ -98,7 +98,7 @@ void MainWindow::settings(void)
 
 void MainWindow::UpdateChart(QString ticker)
 {
-    bool isLineSeries = false;
+    bool isLineSeries = true;
 
     mMainChart->removeAllSeries();
 
@@ -111,6 +111,8 @@ void MainWindow::UpdateChart(QString ticker)
 
     tmpMap = mYFAPI.GetTickerData(ticker, "0", QString("%1").arg(now));
 
+    //chartView->addSeriesMap(tmpMap);
+
     if (isLineSeries)
     {
         QLineSeries * series = new QLineSeries();
@@ -120,19 +122,24 @@ void MainWindow::UpdateChart(QString ticker)
 
         mMainChart->legend()->hide();
         mMainChart->addSeries(series);
-        mMainChart->createDefaultAxes();
         mMainChart->setTitle(QString("%1 Stock").arg(ticker));
 
-        QDateTimeAxis *axisX = new QDateTimeAxis;
+        QDateTimeAxis * axisX = new QDateTimeAxis;
         axisX->setTickCount(10);
         axisX->setFormat("MM-dd-yyyy");
         axisX->setTitleText("Date");
-        mMainChart->addAxis(axisX, Qt::AlignBottom);
+        mMainChart->setAxisX(axisX);
         series->attachAxis(axisX);
+
+        QValueAxis * axisY = new QValueAxis();
+        axisY->setTickCount(10);
+        axisY->setTitleText("Value ($)");
+        mMainChart->setAxisY(axisY);
+        series->attachAxis(axisY);
     }
     else
     {
-        QCandlestickSeries *series = new QCandlestickSeries();
+        QCandlestickSeries * series = new QCandlestickSeries();
         series->setIncreasingColor(QColor(Qt::green));
         series->setDecreasingColor(QColor(Qt::red));
 
@@ -148,15 +155,20 @@ void MainWindow::UpdateChart(QString ticker)
 
         mMainChart->legend()->hide();
         mMainChart->addSeries(series);
-        mMainChart->createDefaultAxes();
         mMainChart->setTitle(QString("%1 Stock").arg(ticker));
 
-        QDateTimeAxis *axisX = new QDateTimeAxis;
+        QDateTimeAxis * axisX = new QDateTimeAxis;
         axisX->setTickCount(10);
         axisX->setFormat("MM-dd-yyyy");
         axisX->setTitleText("Date");
-        mMainChart->addAxis(axisX, Qt::AlignBottom);
+        mMainChart->setAxisX(axisX);
         series->attachAxis(axisX);
+
+        QValueAxis * axisY = new QValueAxis();
+        axisY->setTickCount(10);
+        axisY->setTitleText("Value ($)");
+        mMainChart->setAxisY(axisY);
+        series->attachAxis(axisY);
     }
 
     mMainChart->update();
@@ -167,10 +179,6 @@ void MainWindow::UpdateChart(QString ticker)
 
         }
     }
-
-    // Stocks: Return: 1.105 Volatility: 1.181
-    // Bonds:
-    // Real Estate:
 
     X1*return1 + X2*return2 + X3*return3
 

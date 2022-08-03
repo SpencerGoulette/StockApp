@@ -5,6 +5,7 @@
 #include <QtCharts>
 #include <QComboBox>
 #include <QString>
+#include <QToolTip>
 
 #include "yfapi.hpp"
 

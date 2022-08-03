@@ -25,11 +25,13 @@ CONFIG += c++11 no_keywords
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
-    yfapi.cpp
+    yfapi.cpp \
+    ChartView.cpp
 
 HEADERS += \
         mainwindow.h \
-        yfapi.hpp
+        yfapi.hpp \
+    ChartView.h
 
 LIBS += -L/tmp/curl/lib -lcurl
 
