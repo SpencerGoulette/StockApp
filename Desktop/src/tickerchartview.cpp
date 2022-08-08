@@ -1,13 +1,13 @@
-#include "ChartView.h"
+#include "tickerchartview.hpp"
 
-ChartView::ChartView(QChart* chart, QWidget *parent)
+TickerChartView::TickerChartView(QChart* chart, QWidget *parent)
     : QChartView(chart, parent)
 {
     mMouseLine = new QGraphicsLineItem();
 }
 
 
-void ChartView::mouseMoveEvent(QMouseEvent *event)
+void TickerChartView::mouseMoveEvent(QMouseEvent *event)
 {
     QPointF widgetPos = event->localPos();
     QPointF scenePos = mapToScene(QPoint(static_cast<int>(widgetPos.x()), static_cast<int>(widgetPos.y())));
@@ -66,8 +66,7 @@ void ChartView::mouseMoveEvent(QMouseEvent *event)
         // Update Scene
         setScene(chartScene);
     }
+    QChartView::mouseMoveEvent(event);
 
     update();
-
-    QChartView::mouseMoveEvent(event);
 }

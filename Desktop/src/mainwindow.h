@@ -2,12 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QtCharts>
-#include <QComboBox>
-#include <QString>
-#include <QToolTip>
+#include <QStackedLayout>
 
-#include "yfapi.hpp"
+#include "tickerdisplay.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -16,11 +13,6 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
-
-    QChart      * mMainChart;
-
-public Q_SLOTS:
-    void UpdateChart(QString ticker);
 
 private:
     void setup(void);
@@ -31,10 +23,9 @@ private:
     void createCentral(void);
     void createStatus(void);
 
-    QWidget * mMainWidget;
-
-    QComboBox * mStockPicker;
-    YahooFinanceAPI mYFAPI;
+    QWidget * mainWidget;
+    QStackedLayout * mainLayout;
+    TickerDisplay * mTickerDisplay;
 
 private Q_SLOTS:
     void about(void);

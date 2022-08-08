@@ -1,16 +1,16 @@
-#ifndef CHARTVIEW_H
-#define CHARTVIEW_H
+#ifndef TICKERCHARTVIEW_H
+#define TICKERCHARTVIEW_H
 
 #include <QtCharts>
 
 #include <iostream>
 
-class ChartView : public QChartView
+class TickerChartView : public QChartView
 {
     Q_OBJECT
 
 public:
-    ChartView(QChart* chart, QWidget *parent = 0);
+    TickerChartView(QChart* chart, QWidget *parent = 0);
 
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;

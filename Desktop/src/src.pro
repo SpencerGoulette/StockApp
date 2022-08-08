@@ -26,12 +26,20 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     yfapi.cpp \
-    ChartView.cpp
+    tickerchartview.cpp \
+    tickerinfoview.cpp \
+    tickerselectorview.cpp \
+    tickerdisplay.cpp \
+    tickeritem.cpp
 
 HEADERS += \
         mainwindow.h \
         yfapi.hpp \
-    ChartView.h
+    tickerinfoview.hpp \
+    tickerselectorview.hpp \
+    tickerdisplay.hpp \
+    tickerchartview.hpp \
+    tickeritem.hpp
 
 LIBS += -L/tmp/curl/lib -lcurl
 
