@@ -1,4 +1,5 @@
 #include "tickerchartview.hpp"
+#include "tickerdisplay.hpp"
 
 TickerChartView::TickerChartView(QChart* chart, QWidget *parent)
     : QChartView(chart, parent)
@@ -21,8 +22,6 @@ void TickerChartView::mouseMoveEvent(QMouseEvent *event)
 
     time_t msEpoch = int(xVal / 1000);
     struct tm * date = gmtime(&msEpoch);
-    //printf("%d", int(xVal));
-    //printf("%s", asctime(gmtime(&val)));
     QString dateStr = QString("%1-%2-%3").arg(date->tm_mon + 1).arg(date->tm_mday).arg(date->tm_year + 1900);
 
     // Remove Overlay Graphics
@@ -47,20 +46,27 @@ void TickerChartView::mouseMoveEvent(QMouseEvent *event)
         {
             // Get Point
             QXYSeries * serie = qobject_cast<QXYSeries *>(series.at(idx));
-            int expIdx = int((xVal - serie->at(0).x())/double(serie->at(1).x() - serie->at(0).x()));
             int pointX = int(pos.x());
-            int pointY = int(chart()->mapToPosition(QPointF(0, serie->at(expIdx).y())).y());
+            QString dateStr = QString("%1-%2-%3")
+                    .arg(date->tm_year + 1900)
+                    .arg(date->tm_mon + 1, 2, 10, QChar('0'))
+                    .arg(date->tm_mday, 2, 10, QChar('0'));
+            if (curTickerMap["Date"].indexOf(dateStr) >= 0)
+            {
+                yVal = curTickerMap["Close"].at(curTickerMap["Date"].indexOf(dateStr)).toDouble();
+                int pointY = int(chart()->mapToPosition(QPointF(xVal, yVal)).y());
 
-            // Customize Point Highlighting
-            QPen pen = serie->pen();
-            pen.setColor(Qt::black);
-            QRect highPoint = QRect(pointX, pointY, 2*serie->pen().width(), 2*serie->pen().width());
+                // Customize Point Highlighting
+                QPen pen = serie->pen();
+                pen.setColor(Qt::black);
+                QRect highPoint = QRect(pointX, pointY, 2*serie->pen().width(), 2*serie->pen().width());
 
-            // Add Highlights
-            mMouseDots.append(chartScene->addEllipse(highPoint, pen, serie->brush()));
+                // Add Highlights
+                mMouseDots.append(chartScene->addEllipse(highPoint, pen, serie->brush()));
 
-            // Add Point Info
-            QToolTip::showText(mapToGlobal(curPos), QString("Date: %1\n Val: %2").arg(dateStr).arg(serie->at(expIdx).y()));
+                // Add Point Info
+                QToolTip::showText(mapToGlobal(curPos), QString("Date: %1\n Val: %2").arg(dateStr).arg(yVal));
+            }
         }
 
         // Update Scene

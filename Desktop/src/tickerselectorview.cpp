@@ -54,6 +54,7 @@ void TickerSelectorView::createGUI(void)
     mainLayout->addWidget(mTickerScrollArea);
 
     setLayout(mainLayout);
+    setMaximumWidth(sizeHint().width());
 }
 
 

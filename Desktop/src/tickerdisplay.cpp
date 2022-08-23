@@ -61,21 +61,23 @@ void TickerDisplay::UpdateTicker(QString ticker)
     if (ticker == "")
         return;
 
-    QMap<QString, QStringList> tmpMap;
-
     std::time_t now = std::time(nullptr);
 
-    tmpMap = mYFAPI.GetTickerData(ticker, "0", QString("%1").arg(now));
+    QMap<QString, QStringList>  tmpTickerMap;
 
-    //chartView->addSeriesMap(tmpMap);
+    tmpTickerMap = mYFAPI.GetTickerData(ticker, "0", QString("%1").arg(now));
+
+    mTickerChartView->UpdateTicker(tmpTickerMap);
+
+    //chartView->addSeriesMap(tmpTickerMap);
 
     // Update Chart
     if (isLineSeries)
     {
         QLineSeries * series = new QLineSeries();
 
-        for(int row = 0; row < tmpMap["Date"].size(); row++)
-            series->append(QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch(), tmpMap["Close"].at(row).toDouble());
+        for(int row = 0; row < tmpTickerMap["Date"].size(); row++)
+            series->append(QDateTime(QDate::fromString(tmpTickerMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch(), tmpTickerMap["Close"].at(row).toDouble());
 
         mMainChart->legend()->hide();
         mMainChart->addSeries(series);
@@ -100,13 +102,13 @@ void TickerDisplay::UpdateTicker(QString ticker)
         series->setIncreasingColor(QColor(Qt::green));
         series->setDecreasingColor(QColor(Qt::red));
 
-        for(int row = 0; row < tmpMap["Date"].size(); row++)
+        for(int row = 0; row < tmpTickerMap["Date"].size(); row++)
         {
-            QCandlestickSet * candlestick = new QCandlestickSet(tmpMap["Open"].at(row).toDouble(),
-                                    tmpMap["High"].at(row).toDouble(),
-                                    tmpMap["Low"].at(row).toDouble(),
-                                    tmpMap["Close"].at(row).toDouble(),
-                                    QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch());
+            QCandlestickSet * candlestick = new QCandlestickSet(tmpTickerMap["Open"].at(row).toDouble(),
+                                    tmpTickerMap["High"].at(row).toDouble(),
+                                    tmpTickerMap["Low"].at(row).toDouble(),
+                                    tmpTickerMap["Close"].at(row).toDouble(),
+                                    QDateTime(QDate::fromString(tmpTickerMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch());
             series->append(candlestick);
         }
 
@@ -141,9 +143,9 @@ void TickerDisplay::UpdateTicker(QString ticker)
     QString wkhigh = "";
     QString wklow = "";
 
-    open = tmpMap["Open"].last();
-    high = tmpMap["High"].last();
-    low = tmpMap["Low"].last();
+    open = tmpTickerMap["Open"].last();
+    high = tmpTickerMap["High"].last();
+    low = tmpTickerMap["Low"].last();
 
     mTickerInfoView->updateTickerInfo(open, high, low, mktcap, peratio, divyield, wkhigh, wklow);
 

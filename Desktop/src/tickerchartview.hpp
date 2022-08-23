@@ -12,12 +12,16 @@ class TickerChartView : public QChartView
 public:
     TickerChartView(QChart* chart, QWidget *parent = 0);
 
+    void UpdateTicker(QMap<QString, QStringList> tmpTickerMap) {curTickerMap = tmpTickerMap;}
+
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
 
 private:
     QGraphicsLineItem * mMouseLine;
     QList<QGraphicsEllipseItem *> mMouseDots;
+
+    QMap<QString, QStringList> curTickerMap;
 };
 
 #endif // CHARTVIEW_H

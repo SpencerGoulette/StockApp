@@ -52,12 +52,12 @@ void TickerInfoView::createGUI(void)
 void TickerInfoView::updateTickerInfo(QString open, QString high, QString low, QString mktcap,
                                   QString peratio, QString divyield, QString wkhigh, QString wklow)
 {
-    mOpenLbl->setText(mOpenLbl->text().append(open));
-    mHighLbl->setText(mHighLbl->text().append(high));
-    mLowLbl->setText(mLowLbl->text().append(low));
-    mMktCapLbl->setText(mMktCapLbl->text().append(mktcap));
-    mPERatio->setText(mPERatio->text().append(peratio));
-    mDivYield->setText(mDivYield->text().append(divyield));
-    m52WkHigh->setText(m52WkHigh->text().append(wkhigh));
-    m52WkLow->setText(m52WkLow->text().append(wklow));
+    mOpenLbl->setText(QString("Open %1").arg(open));
+    mHighLbl->setText(QString("High %1").arg(high));
+    mLowLbl->setText(QString("Low %1").arg(low));
+    mMktCapLbl->setText(QString("Mkt Cap %1").arg(mktcap));
+    mPERatio->setText(QString("P/E Ratio %1").arg(peratio));
+    mDivYield->setText(QString("Div Yield %1").arg(divyield));
+    m52WkHigh->setText(QString("52-Wk High %1").arg(wkhigh));
+    m52WkLow->setText(QString("52-Wk Low %1").arg(wklow));
 }
