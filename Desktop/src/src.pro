@@ -26,12 +26,31 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     yfapi.cpp \
-    ChartView.cpp
+    tickerchartview.cpp \
+    tickerinfoview.cpp \
+    tickerselectorview.cpp \
+    tickerdisplay.cpp \
+    tickeritem.cpp \
+    dashboarddisplay.cpp \
+    portfoliodisplay.cpp \
+    budgettingdisplay.cpp \
+    resourcesdisplay.cpp \
+    settingsdisplay.cpp
 
 HEADERS += \
         mainwindow.h \
         yfapi.hpp \
-    ChartView.h
+    tickerinfoview.hpp \
+    tickerselectorview.hpp \
+    tickerdisplay.hpp \
+    tickerchartview.hpp \
+    tickeritem.hpp \
+    tickerlist.hpp \
+    dashboarddisplay.hpp \
+    portfoliodisplay.hpp \
+    budgettingdisplay.hpp \
+    resourcesdisplay.hpp \
+    settingsdisplay.hpp
 
 LIBS += -L/tmp/curl/lib -lcurl
 
@@ -39,3 +58,6 @@ LIBS += -L/tmp/curl/lib -lcurl
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resources.qrc
