@@ -1,0 +1,36 @@
+QMainWindow {
+    background-color: white;
+}
+
+
+QPushButton#menuButton[selected="true"] {
+    border: none;
+    font: bold 25px;
+    text-align: left;
+    color: black;
+}
+
+
+QPushButton#menuButton {
+    border: none;
+    font: bold 25px;
+    text-align: left;
+    color: gray;
+}
+
+
+QPushButton#menuButton:hover {
+    border: none;
+    font: bold 25px;
+    text-align: left;
+    color: black;
+}
+
+QPushButton#donateButton {
+    border: none;
+    font: bold 20px;
+    background-color: #42d0ff;
+    color: white;
+    border-radius: 10px;
+    height: 40px
+}
