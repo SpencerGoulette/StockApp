@@ -1,17 +1,12 @@
 #include "mainwindow.h"
-#include "tickerchartview.hpp"
+#include "ChartView.h"
 
 #include <QHBoxLayout>
 #include <QPainter>
 #include <QComboBox>
 #include <QAction>
-#include <QUrl>
 
-#define APP_NAME "Finette"
-
-#define LOGO_SIZE 50
-
-#define DONATE_URL "https://www.patreon.com/Finette/membership"
+#define WINDOW_TITLE "Early Investor"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -27,185 +22,170 @@ MainWindow::~MainWindow()
 
 void MainWindow::setup(void)
 {
-    createLayout();
+    createMenu();
+    //createToolBar();
+    //createDock();
+    createCentral();
+    //createStatus();
 
     setMinimumSize(720, 480);
-
-    // Include border
-    //setWindowFlags(windowFlags() | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
-    //setWindowState(Qt::WindowMaximized);
-    //setWindowTitle(WINDOW_TITLE);
-
-    // Make borderless
-    setWindowFlags(windowFlags() | Qt::FramelessWindowHint);
+    setWindowFlags(windowFlags() | Qt::WindowSystemMenuHint | Qt::WindowMinMaxButtonsHint);
     setWindowState(Qt::WindowMaximized);
-
-    // Apply Stylesheet
-    QFile file(":/style/style.qss");
-    file.open(QFile::ReadOnly);
-    QString styleSheet = QLatin1String(file.readAll());
-    qApp->setStyleSheet(styleSheet);
+    setWindowTitle(WINDOW_TITLE);
 }
 
 
-void MainWindow::createLayout(void)
+void MainWindow::createMenu(void)
 {
-    // INSTANTIATE
-    // Main Layout Widgets
-    mMainWidget         = new QWidget();
-    mMenuWidget         = new QWidget();
-    mTabWidget          = new QWidget();
+    QAction * exitAction        = new QAction(tr("Exit"), this);
+    QAction * settingsAction    = new QAction(tr("Settings"), this);
+    QAction * aboutAction       = new QAction(tr("About"), this);
 
-    // Main Layouts
-    mMainLayout         = new QHBoxLayout();
-    mMenuLayout         = new QVBoxLayout();
-    mTabLayout          = new QStackedLayout();
+    connect(exitAction,     SIGNAL(triggered()), qApp, SLOT(quit()));
+    connect(settingsAction, SIGNAL(triggered()), this, SLOT(settings()));
+    connect(aboutAction,    SIGNAL(triggered()), this, SLOT(about()));
 
-    // Logo
-    mLogo               = new QLabel();
-    mLogoLbl            = new QLabel(tr(APP_NAME));
+    QMenu * fileMenu    = menuBar()->addMenu(tr("File"));
+    QMenu * helpMenu    = menuBar()->addMenu(tr("About"));
 
-    // Menu Options
-    mDashboardBtn       = new QPushButton(QIcon(":/img/dashboard.png"), tr("Dashboard"));
-    mPortfoliosBtn      = new QPushButton(QIcon(":/img/portfolios.png"), tr("Portfolios"));
-    mBudgettingBtn      = new QPushButton(QIcon(":/img/budget.png"), tr("Budgetting"));
-    mTickersBtn         = new QPushButton(QIcon(":/img/ticker.png"), tr("Tickers"));
-    mResourcesBtn       = new QPushButton(QIcon(":/img/resources.png"), tr("Resources"));
-    mSettingsBtn        = new QPushButton(QIcon(":/img/settings.png"), tr("Settings"));
+    fileMenu->addAction(settingsAction);
+    fileMenu->addAction(exitAction);
 
-    // Displays
-    mDashboardDisplay   = new DashboardDisplay();
-    mPortfolioDisplay   = new PortfolioDisplay();
-    mBudgettingDisplay  = new BudgettingDisplay();
-    mTickerDisplay      = new TickerDisplay();
-    mResourcesDisplay   = new ResourcesDisplay();
-    mSettingsDisplay    = new SettingsDisplay();
-
-    // Donate
-    mDonateBtn          = new QPushButton(tr("Donate"));
+    helpMenu->addAction(aboutAction);
+}
 
 
-    // SETUP
-    // Set up Logo
-    QHBoxLayout * logoLayout = new QHBoxLayout();
-    QWidget * logo  = new QWidget();
+void MainWindow::createCentral(void)
+{
+    mMainWidget  = new QWidget();
+    mMainChart   = new QChart();
+    mStockPicker = new QComboBox();
 
-    QFont logoFont = mLogoLbl->font();
-    logoFont.setPointSize(LOGO_SIZE/2);
-    logoFont.setBold(true);
-    mLogoLbl->setFont(logoFont);
-    QPixmap pixmap(":/img/logo.png");
-    mLogo->setPixmap(pixmap.scaled(LOGO_SIZE, LOGO_SIZE));
-    logo->setMaximumHeight(LOGO_SIZE*2);
+    QVBoxLayout * mainLayout = new QVBoxLayout();
 
-    logoLayout->addWidget(mLogo);
-    logoLayout->addWidget(mLogoLbl);
+    mStockPicker->addItem("");
+    mStockPicker->addItem("SPY");
+    mStockPicker->addItem("TSLA");
+    mStockPicker->addItem("BND");
 
-    logo->setLayout(logoLayout);
+    ChartView * chartView = new ChartView(mMainChart);
+    chartView->setRubberBand(QChartView::RectangleRubberBand);
+    chartView->setRenderHint(QPainter::Antialiasing);
 
-    // Setup Buttons
-    mDashboardBtn->setObjectName("menuButton");
-    mPortfoliosBtn->setObjectName("menuButton");
-    mBudgettingBtn->setObjectName("menuButton");
-    mTickersBtn->setObjectName("menuButton");
-    mResourcesBtn->setObjectName("menuButton");
-    mSettingsBtn->setObjectName("menuButton");
-    mDonateBtn->setObjectName("donateButton");
+    connect(mStockPicker, SIGNAL(currentIndexChanged(QString)), this, SLOT(UpdateChart(QString)));
 
-    connect(mDashboardBtn,  &QPushButton::clicked, this, &MainWindow::selectMenuButton);
-    connect(mPortfoliosBtn, &QPushButton::clicked, this, &MainWindow::selectMenuButton);
-    connect(mBudgettingBtn, &QPushButton::clicked, this, &MainWindow::selectMenuButton);
-    connect(mTickersBtn,    &QPushButton::clicked, this, &MainWindow::selectMenuButton);
-    connect(mResourcesBtn,  &QPushButton::clicked, this, &MainWindow::selectMenuButton);
-    connect(mSettingsBtn,   &QPushButton::clicked, this, &MainWindow::selectMenuButton);
-    connect(mDonateBtn,     &QPushButton::clicked,
-            this, [=]() {QDesktopServices::openUrl(QUrl(DONATE_URL, QUrl::TolerantMode));});
+    mainLayout->addWidget(mStockPicker);
+    mainLayout->addWidget(chartView);
 
-    mDashboardBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mPortfoliosBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mBudgettingBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mTickersBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mResourcesBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mSettingsBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-
-    mSelectedOption = mDashboardBtn;
-    mDashboardBtn->setProperty("selected", "true");
-
-
-    // LAYOUT
-    // Menu Widget
-    mMenuLayout->addWidget(logo, 0, Qt::AlignTop);
-
-    mMenuLayout->addWidget(mDashboardBtn, 1);
-    mMenuLayout->addWidget(mPortfoliosBtn, 1);
-    mMenuLayout->addWidget(mBudgettingBtn, 1);
-    mMenuLayout->addWidget(mTickersBtn, 1);
-    mMenuLayout->addWidget(mResourcesBtn, 1);
-    mMenuLayout->addWidget(mSettingsBtn, 1);
-
-    mMenuLayout->addWidget(mDonateBtn);
-
-    mMenuWidget->setLayout(mMenuLayout);
-
-    // Tab Widget
-    mTabLayout->addWidget(mDashboardDisplay);
-    mTabLayout->addWidget(mPortfolioDisplay);
-    mTabLayout->addWidget(mBudgettingDisplay);
-    mTabLayout->addWidget(mTickerDisplay);
-    mTabLayout->addWidget(mResourcesDisplay);
-    mTabLayout->addWidget(mSettingsDisplay);
-
-    mTabWidget->setLayout(mTabLayout);
-
-    // Main Widget
-    mMainLayout->addWidget(mMenuWidget);
-    mMainLayout->addWidget(mTabWidget);
-
-    mMainWidget->setLayout(mMainLayout);
+    mMainWidget->setLayout(mainLayout);
 
     setCentralWidget(mMainWidget);
 }
 
 
-void MainWindow::selectMenuButton(void)
+void MainWindow::about(void)
 {
-    QPushButton * button = qobject_cast<QPushButton *>(sender());
-
-    int ofst = 1;
-
-    mSelectedOption->setProperty("selected", "false");
-    button->setProperty("selected", "true");
-
-    style()->unpolish(mSelectedOption);
-    style()->unpolish(button);
-    style()->polish(mSelectedOption);
-    style()->polish(button);
-
-    mSelectedOption = button;
-    mTabLayout->setCurrentIndex(mMenuLayout->indexOf(button) - ofst);
+    QMessageBox::about(this, tr("About"), tr("This example demonstrates the "
+        "different features of the QCompleter class."));
 }
 
 
-/*
-void MainWindow::createCentral(void)
+void MainWindow::settings(void)
 {
-    mainWidget      = new QWidget();
-    mainLayout      = new QStackedLayout();
 
-    mTickerDisplay  = new TickerDisplay();
-
-    QPushButton * button = new QPushButton(tr("FinEarn"));
-
-    QPixmap pixmap(":/img/logo.jpg");
-    QIcon ButtonIcon(pixmap);
-    button->setIcon(ButtonIcon);
-    button->setIconSize(pixmap.rect().size());
-
-    mainLayout->addWidget(button);
-    //mainLayout->addWidget(mTickerDisplay);
-
-    mainWidget->setLayout(mainLayout);
-
-    setCentralWidget(mainWidget);
 }
+
+
+void MainWindow::UpdateChart(QString ticker)
+{
+    bool isLineSeries = true;
+
+    mMainChart->removeAllSeries();
+
+    if (ticker == "")
+        return;
+
+    QMap<QString, QStringList> tmpMap;
+
+    std::time_t now = std::time(nullptr);
+
+    tmpMap = mYFAPI.GetTickerData(ticker, "0", QString("%1").arg(now));
+
+    //chartView->addSeriesMap(tmpMap);
+
+    if (isLineSeries)
+    {
+        QLineSeries * series = new QLineSeries();
+
+        for(int row = 0; row < tmpMap["Date"].size(); row++)
+            series->append(QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch(), tmpMap["Close"].at(row).toDouble());
+
+        mMainChart->legend()->hide();
+        mMainChart->addSeries(series);
+        mMainChart->setTitle(QString("%1 Stock").arg(ticker));
+
+        QDateTimeAxis * axisX = new QDateTimeAxis;
+        axisX->setTickCount(10);
+        axisX->setFormat("MM-dd-yyyy");
+        axisX->setTitleText("Date");
+        mMainChart->setAxisX(axisX);
+        series->attachAxis(axisX);
+
+        QValueAxis * axisY = new QValueAxis();
+        axisY->setTickCount(10);
+        axisY->setTitleText("Value ($)");
+        mMainChart->setAxisY(axisY);
+        series->attachAxis(axisY);
+    }
+    else
+    {
+        QCandlestickSeries * series = new QCandlestickSeries();
+        series->setIncreasingColor(QColor(Qt::green));
+        series->setDecreasingColor(QColor(Qt::red));
+
+        for(int row = 0; row < tmpMap["Date"].size(); row++)
+        {
+            QCandlestickSet * candlestick = new QCandlestickSet(tmpMap["Open"].at(row).toDouble(),
+                                    tmpMap["High"].at(row).toDouble(),
+                                    tmpMap["Low"].at(row).toDouble(),
+                                    tmpMap["Close"].at(row).toDouble(),
+                                    QDateTime(QDate::fromString(tmpMap["Date"].at(row), "yyyy-MM-dd")).toMSecsSinceEpoch());
+            series->append(candlestick);
+        }
+
+        mMainChart->legend()->hide();
+        mMainChart->addSeries(series);
+        mMainChart->setTitle(QString("%1 Stock").arg(ticker));
+
+        QDateTimeAxis * axisX = new QDateTimeAxis;
+        axisX->setTickCount(10);
+        axisX->setFormat("MM-dd-yyyy");
+        axisX->setTitleText("Date");
+        mMainChart->setAxisX(axisX);
+        series->attachAxis(axisX);
+
+        QValueAxis * axisY = new QValueAxis();
+        axisY->setTickCount(10);
+        axisY->setTitleText("Value ($)");
+        mMainChart->setAxisY(axisY);
+        series->attachAxis(axisY);
+    }
+
+    mMainChart->update();
+/*    for(unsigned long asset = 0; asset < assetClasses.size(); asset++)
+    {
+        for()
+        {
+
+        }
+    }
+
+    X1*return1 + X2*return2 + X3*return3
+
+    X1^2*var(return1) + X1^2*var(return1) + X1^2*var(return1) + 2*X1*X2*covar(return1, return2)
+            + 2*X1*X3*covar(return1, return3) + 2*X2*X3*covar(return2, return3)
+
+    for (unsigned long idx = 0; idx < ; idx++)
+        series->append(xData.at(idx), yData.at(idx));
 */
+}
