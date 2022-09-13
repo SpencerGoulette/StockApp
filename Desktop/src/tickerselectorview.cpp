@@ -1,4 +1,5 @@
 #include "tickerselectorview.hpp"
+#include "tickerlist.hpp"
 
 TickerSelectorView::TickerSelectorView(QWidget *parent)
     : QWidget(parent)
@@ -72,14 +73,20 @@ void TickerSelectorView::loadRecommendations(void)
 
 void TickerSelectorView::addTicker(void)
 {
-    TickerItem * tickerItem = new TickerItem(mTickerSelector->text());
-    mTickers.append(tickerItem);
-    mTickerListLayout->addWidget(tickerItem, 0, Qt::AlignTop);
+    if (Russell1000.contains(mTickerSelector->text()))
+    {
+        TickerItem * tickerItem = new TickerItem(mTickerSelector->text());
+        mTickers.append(tickerItem);
+        mTickerListLayout->addWidget(tickerItem, 0, Qt::AlignTop);
 
-    connect(tickerItem, SIGNAL(tickerClicked(QString)), this, SIGNAL(tickerSelected(QString)));
-    connect(tickerItem, SIGNAL(tickerRemoved()), this, SLOT(removeTicker()));
+        connect(tickerItem, SIGNAL(tickerClicked(QString)), this, SIGNAL(tickerSelected(QString)));
+        connect(tickerItem, SIGNAL(tickerRemoved()), this, SLOT(removeTicker()));
 
-    tickerItem->show();
+        tickerItem->show();
+    }
+    else {
+        mTickerSelector->setText("INVALID TICKER");
+    }
 }
 
 

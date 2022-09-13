@@ -16,7 +16,6 @@ TickerDisplay::~TickerDisplay()
 }
 
 
-
 void TickerDisplay::setup(void)
 {
     createGUI();
@@ -27,19 +26,43 @@ void TickerDisplay::setup(void)
 
 void TickerDisplay::createGUI(void)
 {
+    mTickerTitle    = new QLabel("");
+    mAllTimeBtn     = new QPushButton(tr("All"));
+    mYearTimeBtn    = new QPushButton(tr("YTD"));
+    mMonthTimeBtn   = new QPushButton(tr("Month"));
+    mWeekTimeBtn    = new QPushButton(tr("Week"));
+
     mMainChart              = new QChart();
     mTickerSelectorView     = new TickerSelectorView();
     mTickerInfoView         = new TickerInfoView();
     mTickerChartView        = new TickerChartView(mMainChart);
 
+    mTickerTitle->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+    connect(mAllTimeBtn,    &QPushButton::clicked,  mTickerChartView,   &TickerChartView::UpdateRange);
+    connect(mYearTimeBtn,   &QPushButton::clicked,  mTickerChartView,   &TickerChartView::UpdateRange);
+    connect(mMonthTimeBtn,  &QPushButton::clicked,  mTickerChartView,   &TickerChartView::UpdateRange);
+    connect(mWeekTimeBtn,   &QPushButton::clicked,  mTickerChartView,   &TickerChartView::UpdateRange);
+
     QHBoxLayout * mainLayout    = new QHBoxLayout();
     QVBoxLayout * tickerLayout  = new QVBoxLayout();
+    QHBoxLayout * tLayout   = new QHBoxLayout();
 
     mTickerChartView->setRubberBand(QChartView::RectangleRubberBand);
     mTickerChartView->setRenderHint(QPainter::Antialiasing);
 
     QWidget * tickerHWidget = new QWidget();
+    QWidget * chartTitle    = new QWidget();
 
+    tLayout->addWidget(mTickerTitle, 1, Qt::AlignLeft);
+    tLayout->addWidget(mAllTimeBtn, 0, Qt::AlignRight);
+    tLayout->addWidget(mYearTimeBtn, 0, Qt::AlignRight);
+    tLayout->addWidget(mMonthTimeBtn, 0, Qt::AlignRight);
+    tLayout->addWidget(mWeekTimeBtn, 0, Qt::AlignRight);
+
+    chartTitle->setLayout(tLayout);
+
+    tickerLayout->addWidget(chartTitle);
     tickerLayout->addWidget(mTickerChartView);
     tickerLayout->addWidget(mTickerInfoView);
 
@@ -81,7 +104,8 @@ void TickerDisplay::UpdateTicker(QString ticker)
 
         mMainChart->legend()->hide();
         mMainChart->addSeries(series);
-        mMainChart->setTitle(QString("%1 Stock").arg(ticker));
+        mTickerTitle->setText(ticker);
+        //mMainChart->setTitle(QString("%1 Stock").arg(ticker));
 
         QDateTimeAxis * axisX = new QDateTimeAxis;
         axisX->setTickCount(10);
@@ -134,18 +158,18 @@ void TickerDisplay::UpdateTicker(QString ticker)
 
 
     // Update Ticker Info
-    QString open = "";
-    QString high = "";
-    QString low = "";
-    QString mktcap = "";
-    QString peratio = "";
-    QString divyield = "";
-    QString wkhigh = "";
-    QString wklow = "";
+    QString open        = "";
+    QString high        = "";
+    QString low         = "";
+    QString mktcap      = "";
+    QString peratio     = "";
+    QString divyield    = "";
+    QString wkhigh      = "";
+    QString wklow       = "";
 
-    open = tmpTickerMap["Open"].last();
-    high = tmpTickerMap["High"].last();
-    low = tmpTickerMap["Low"].last();
+    open    = tmpTickerMap["Open"].last();
+    high    = tmpTickerMap["High"].last();
+    low     = tmpTickerMap["Low"].last();
 
     mTickerInfoView->updateTickerInfo(open, high, low, mktcap, peratio, divyield, wkhigh, wklow);
 

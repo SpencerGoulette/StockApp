@@ -3,6 +3,7 @@
 
 #include <QtCharts>
 #include <QLabel>
+#include <QPushButton>
 
 #include "yfapi.hpp"
 #include "tickerchartview.hpp"
@@ -26,6 +27,12 @@ private:
     void setup(void);
 
     void createGUI(void);
+
+    QLabel * mTickerTitle ;
+    QPushButton * mAllTimeBtn;
+    QPushButton * mYearTimeBtn;
+    QPushButton * mMonthTimeBtn;
+    QPushButton * mWeekTimeBtn;
 
     TickerChartView *       mTickerChartView;
     TickerInfoView *        mTickerInfoView;

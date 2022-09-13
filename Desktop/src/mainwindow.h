@@ -4,7 +4,12 @@
 #include <QMainWindow>
 #include <QStackedLayout>
 
+#include "dashboarddisplay.hpp"
+#include "portfoliodisplay.hpp"
+#include "budgettingdisplay.hpp"
 #include "tickerdisplay.hpp"
+#include "resourcesdisplay.hpp"
+#include "settingsdisplay.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -16,20 +21,46 @@ public:
 
 private:
     void setup(void);
+    void createLayout(void);
+    void selectMenuButton(void);
 
-    void createMenu(void);
-    void createToolBar(void);
-    void createDock(void);
-    void createCentral(void);
-    void createStatus(void);
+    // Main Layout Widgets
+    QWidget *           mMainWidget;
+    QWidget *           mMenuWidget;
+    QWidget *           mTabWidget;
 
-    QWidget * mainWidget;
-    QStackedLayout * mainLayout;
-    TickerDisplay * mTickerDisplay;
+    // Main Layouts
+    QHBoxLayout *       mMainLayout;
+    QVBoxLayout *       mMenuLayout;
+    QStackedLayout *    mTabLayout;
 
-private Q_SLOTS:
-    void about(void);
-    void settings(void);
+    // Logo
+    QLabel *            mLogo;
+    QLabel *            mLogoLbl;
+
+    // Menu Options
+    QPushButton *       mDashboardBtn;
+    QPushButton *       mPortfoliosBtn;
+    QPushButton *       mBudgettingBtn;
+    QPushButton *       mTickersBtn;
+    QPushButton *       mResourcesBtn;
+    QPushButton *       mSettingsBtn;
+
+    // Displays
+    DashboardDisplay *  mDashboardDisplay;
+    PortfolioDisplay *  mPortfolioDisplay;
+    BudgettingDisplay * mBudgettingDisplay;
+    TickerDisplay *     mTickerDisplay;
+    ResourcesDisplay *  mResourcesDisplay;
+    SettingsDisplay *   mSettingsDisplay;
+
+    // Donate
+    QWidget *           mDonateWidget;
+    QPushButton *       mDonateBtn;
+
+
+    // Record Current Menu Selection
+    QPushButton *       mSelectedOption;
 };
 
 #endif // MAINWINDOW_H

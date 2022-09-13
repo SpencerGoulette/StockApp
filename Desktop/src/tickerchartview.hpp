@@ -14,6 +14,9 @@ public:
 
     void UpdateTicker(QMap<QString, QStringList> tmpTickerMap) {curTickerMap = tmpTickerMap;}
 
+public Q_SLOTS:
+    void UpdateRange(void);
+
 protected:
     virtual void mouseMoveEvent(QMouseEvent *event) override;
 

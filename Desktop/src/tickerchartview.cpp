@@ -59,7 +59,7 @@ void TickerChartView::mouseMoveEvent(QMouseEvent *event)
                 // Customize Point Highlighting
                 QPen pen = serie->pen();
                 pen.setColor(Qt::black);
-                QRect highPoint = QRect(pointX, pointY, 2*serie->pen().width(), 2*serie->pen().width());
+                QRect highPoint = QRect(pointX - serie->pen().width(), pointY, 2*serie->pen().width(), 2*serie->pen().width());
 
                 // Add Highlights
                 mMouseDots.append(chartScene->addEllipse(highPoint, pen, serie->brush()));
@@ -74,5 +74,39 @@ void TickerChartView::mouseMoveEvent(QMouseEvent *event)
     }
     QChartView::mouseMoveEvent(event);
 
+    update();
+}
+
+
+void TickerChartView::UpdateRange(void)
+{
+    QString range = "";
+    if (qobject_cast<QPushButton *>(sender()) != nullptr)
+        range = qobject_cast<QPushButton *>(sender())->text();
+
+    if (range == "Week")
+    {
+        chart()->axisY()->setMin(0);
+        chart()->axisX()->setRange(curTickerMap["Date"].at(curTickerMap["Date"].size() - 7),
+                                    curTickerMap["Date"].at(curTickerMap["Date"].size() - 1));
+    }
+    else if (range == "Month")
+    {
+        chart()->axisY()->setMin(0);
+        chart()->axisX()->setRange(curTickerMap["Date"].at(curTickerMap["Date"].size() - 31),
+                                    curTickerMap["Date"].at(curTickerMap["Date"].size() - 1));
+    }
+    else if (range == "YTD")
+    {
+        chart()->axisY()->setMin(0);
+        chart()->axisX()->setRange(curTickerMap["Date"].at(curTickerMap["Date"].size() - 365),
+                                    curTickerMap["Date"].at(curTickerMap["Date"].size() - 1));
+    }
+    else
+    {
+        chart()->axisY()->setMin(0);
+        chart()->axisX()->setRange(curTickerMap["Date"].at(0),
+                                    curTickerMap["Date"].at(curTickerMap["Date"].size() - 1));
+    }
     update();
 }
