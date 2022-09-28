@@ -7,9 +7,12 @@
 #include <QAction>
 #include <QUrl>
 
+#include <QSpacerItem>
+
 #define APP_NAME "Finette"
 
-#define LOGO_SIZE 50
+#define LOGO_SIZE 50    // Logo's size
+#define MENU_SIZE 72    // Menu Icon's size
 
 #define DONATE_URL "https://www.patreon.com/Finette/membership"
 
@@ -67,23 +70,32 @@ void MainWindow::createLayout(void)
 
     // Menu Options
     mDashboardBtn       = new QPushButton(QIcon(":/img/dashboard.png"), tr("Dashboard"));
+    mPlanningBtn        = new QPushButton(QIcon(""), tr("Planning"));
     mPortfoliosBtn      = new QPushButton(QIcon(":/img/portfolios.png"), tr("Portfolios"));
     mBudgettingBtn      = new QPushButton(QIcon(":/img/budget.png"), tr("Budgetting"));
     mTickersBtn         = new QPushButton(QIcon(":/img/ticker.png"), tr("Tickers"));
     mResourcesBtn       = new QPushButton(QIcon(":/img/resources.png"), tr("Resources"));
     mSettingsBtn        = new QPushButton(QIcon(":/img/settings.png"), tr("Settings"));
+    mHelpBtn            = new QPushButton(QIcon(""), tr("Help"));
 
     // Displays
     mDashboardDisplay   = new DashboardDisplay();
+    mPlanningDisplay    = new PlanningDisplay();
     mPortfolioDisplay   = new PortfolioDisplay();
     mBudgettingDisplay  = new BudgettingDisplay();
     mTickerDisplay      = new TickerDisplay();
     mResourcesDisplay   = new ResourcesDisplay();
     mSettingsDisplay    = new SettingsDisplay();
+    mHelpDisplay        = new HelpDisplay();
 
     // Donate
+    mDonateWidget       = new QWidget();
+    mDonateLayout       = new QVBoxLayout();
+    mDonateLbl          = new QLabel(tr("Click to <b>Support</b> Us!"));
     mDonateBtn          = new QPushButton(tr("Donate"));
 
+    mDonateLbl->setAlignment(Qt::AlignCenter);
+    mDonateWidget->setObjectName("donateWidget");
 
     // SETUP
     // Set up Logo
@@ -99,17 +111,25 @@ void MainWindow::createLayout(void)
     logo->setMaximumHeight(LOGO_SIZE*2);
 
     logoLayout->addWidget(mLogo);
-    logoLayout->addWidget(mLogoLbl);
+    logoLayout->addWidget(mLogoLbl, 1, Qt::AlignLeft);
 
     logo->setLayout(logoLayout);
 
+    mDonateLayout->addWidget(mDonateLbl);
+    mDonateLayout->addWidget(mDonateBtn);
+
+    mDonateWidget->setLayout(mDonateLayout);
+
     // Setup Buttons
     mDashboardBtn->setObjectName("menuButton");
+    mPlanningBtn->setObjectName("menuButton");
     mPortfoliosBtn->setObjectName("menuButton");
     mBudgettingBtn->setObjectName("menuButton");
     mTickersBtn->setObjectName("menuButton");
     mResourcesBtn->setObjectName("menuButton");
     mSettingsBtn->setObjectName("menuButton");
+    mHelpBtn->setObjectName("menuButton");
+
     mDonateBtn->setObjectName("donateButton");
 
     connect(mDashboardBtn,  &QPushButton::clicked, this, &MainWindow::selectMenuButton);
@@ -118,24 +138,28 @@ void MainWindow::createLayout(void)
     connect(mTickersBtn,    &QPushButton::clicked, this, &MainWindow::selectMenuButton);
     connect(mResourcesBtn,  &QPushButton::clicked, this, &MainWindow::selectMenuButton);
     connect(mSettingsBtn,   &QPushButton::clicked, this, &MainWindow::selectMenuButton);
+
+
     connect(mDonateBtn,     &QPushButton::clicked,
             this, [=]() {QDesktopServices::openUrl(QUrl(DONATE_URL, QUrl::TolerantMode));});
 
-    mDashboardBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mPortfoliosBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mBudgettingBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mTickersBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mResourcesBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
-    mSettingsBtn->setIconSize(QSize(LOGO_SIZE/2, LOGO_SIZE/2));
+    mDashboardBtn->setIconSize(QSize(MENU_SIZE/2, MENU_SIZE/2));
+    mPortfoliosBtn->setIconSize(QSize(MENU_SIZE/2, MENU_SIZE/2));
+    mBudgettingBtn->setIconSize(QSize(MENU_SIZE/2, MENU_SIZE/2));
+    mTickersBtn->setIconSize(QSize(MENU_SIZE/2, MENU_SIZE/2));
+    mResourcesBtn->setIconSize(QSize(MENU_SIZE/2, MENU_SIZE/2));
+    mSettingsBtn->setIconSize(QSize(MENU_SIZE/2, MENU_SIZE/2));
 
     mSelectedOption = mDashboardBtn;
     mDashboardBtn->setProperty("selected", "true");
 
 
     // LAYOUT
-    // Menu Widget
+    // Menu Widgets
+    // Logo
     mMenuLayout->addWidget(logo, 0, Qt::AlignTop);
 
+    // Menu Buttons
     mMenuLayout->addWidget(mDashboardBtn, 1);
     mMenuLayout->addWidget(mPortfoliosBtn, 1);
     mMenuLayout->addWidget(mBudgettingBtn, 1);
@@ -143,7 +167,8 @@ void MainWindow::createLayout(void)
     mMenuLayout->addWidget(mResourcesBtn, 1);
     mMenuLayout->addWidget(mSettingsBtn, 1);
 
-    mMenuLayout->addWidget(mDonateBtn);
+    // Donate Buttons
+    mMenuLayout->addWidget(mDonateWidget, 1);
 
     mMenuWidget->setLayout(mMenuLayout);
 
@@ -184,28 +209,3 @@ void MainWindow::selectMenuButton(void)
     mSelectedOption = button;
     mTabLayout->setCurrentIndex(mMenuLayout->indexOf(button) - ofst);
 }
-
-
-/*
-void MainWindow::createCentral(void)
-{
-    mainWidget      = new QWidget();
-    mainLayout      = new QStackedLayout();
-
-    mTickerDisplay  = new TickerDisplay();
-
-    QPushButton * button = new QPushButton(tr("FinEarn"));
-
-    QPixmap pixmap(":/img/logo.jpg");
-    QIcon ButtonIcon(pixmap);
-    button->setIcon(ButtonIcon);
-    button->setIconSize(pixmap.rect().size());
-
-    mainLayout->addWidget(button);
-    //mainLayout->addWidget(mTickerDisplay);
-
-    mainWidget->setLayout(mainLayout);
-
-    setCentralWidget(mainWidget);
-}
-*/

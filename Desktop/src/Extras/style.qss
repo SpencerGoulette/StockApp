@@ -5,7 +5,7 @@ QMainWindow {
 
 QPushButton#menuButton[selected="true"] {
     border: none;
-    font: bold 25px;
+    font: bold 40px;
     text-align: left;
     color: black;
 }
@@ -13,18 +13,21 @@ QPushButton#menuButton[selected="true"] {
 
 QPushButton#menuButton {
     border: none;
-    font: bold 25px;
+    font: bold 40px;
     text-align: left;
     color: gray;
+    margin: 15px;
 }
 
 
 QPushButton#menuButton:hover {
     border: none;
-    font: bold 25px;
+    font: bold 40px;
     text-align: left;
     color: black;
+    margin: 15px;
 }
+
 
 QPushButton#donateButton {
     border: none;
@@ -33,4 +36,10 @@ QPushButton#donateButton {
     color: white;
     border-radius: 10px;
     height: 40px
+}
+
+
+QWidget#donateWidget {
+    background-color: #d9f5ff;
+    border-radius: 10px;
 }

@@ -23,34 +23,34 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11 no_keywords
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp \
-    yfapi.cpp \
-    tickerchartview.cpp \
-    tickerinfoview.cpp \
-    tickerselectorview.cpp \
-    tickerdisplay.cpp \
-    tickeritem.cpp \
-    dashboarddisplay.cpp \
-    portfoliodisplay.cpp \
-    budgettingdisplay.cpp \
-    resourcesdisplay.cpp \
-    settingsdisplay.cpp
+    main.cpp \
+    GUI/mainwindow.cpp \
+    APIs/yfapi.cpp \
+    GUI/Tickers/tickerchartview.cpp \
+    GUI/Tickers/tickerinfoview.cpp \
+    GUI/Tickers/tickerselectorview.cpp \
+    GUI/Tickers/tickerdisplay.cpp \
+    GUI/Tickers/tickeritem.cpp \
+    GUI/Dashboard/dashboarddisplay.cpp \
+    GUI/Portfolios/portfoliodisplay.cpp \
+    GUI/Budgetting/budgettingdisplay.cpp \
+    GUI/Resources/resourcesdisplay.cpp \
+    GUI/Settings/settingsdisplay.cpp
 
 HEADERS += \
-        mainwindow.h \
-        yfapi.hpp \
-    tickerinfoview.hpp \
-    tickerselectorview.hpp \
-    tickerdisplay.hpp \
-    tickerchartview.hpp \
-    tickeritem.hpp \
-    tickerlist.hpp \
-    dashboarddisplay.hpp \
-    portfoliodisplay.hpp \
-    budgettingdisplay.hpp \
-    resourcesdisplay.hpp \
-    settingsdisplay.hpp
+    mainwindow.h \
+    APIs/yfapi.hpp \
+    GUI/Tickers/tickerinfoview.hpp \
+    GUI/Tickers/tickerselectorview.hpp \
+    GUI/Tickers/tickerdisplay.hpp \
+    GUI/Tickers/tickerchartview.hpp \
+    GUI/Tickers/tickeritem.hpp \
+    GUI/Tickers/tickerlist.hpp \
+    GUI/Dashboard/dashboarddisplay.hpp \
+    GUI/Portfolios/portfoliodisplay.hpp \
+    GUI/Budgetting/budgettingdisplay.hpp \
+    GUI/Resources/resourcesdisplay.hpp \
+    GUI/Settings/settingsdisplay.hpp
 
 LIBS += -L/tmp/curl/lib -lcurl
 
@@ -60,4 +60,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    resources.qrc
+    Extras/resources.qrc
