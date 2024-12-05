@@ -2,14 +2,12 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QStackedLayout>
+#include <QtCharts>
+#include <QComboBox>
+#include <QString>
+#include <QToolTip>
 
-#include "dashboarddisplay.hpp"
-#include "portfoliodisplay.hpp"
-#include "budgettingdisplay.hpp"
-#include "tickerdisplay.hpp"
-#include "resourcesdisplay.hpp"
-#include "settingsdisplay.hpp"
+#include "yfapi.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -19,48 +17,28 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+    QChart      * mMainChart;
+
+public Q_SLOTS:
+    void UpdateChart(QString ticker);
+
 private:
     void setup(void);
-    void createLayout(void);
-    void selectMenuButton(void);
 
-    // Main Layout Widgets
-    QWidget *           mMainWidget;
-    QWidget *           mMenuWidget;
-    QWidget *           mTabWidget;
+    void createMenu(void);
+    void createToolBar(void);
+    void createDock(void);
+    void createCentral(void);
+    void createStatus(void);
 
-    // Main Layouts
-    QHBoxLayout *       mMainLayout;
-    QVBoxLayout *       mMenuLayout;
-    QStackedLayout *    mTabLayout;
+    QWidget * mMainWidget;
 
-    // Logo
-    QLabel *            mLogo;
-    QLabel *            mLogoLbl;
+    QComboBox * mStockPicker;
+    YahooFinanceAPI mYFAPI;
 
-    // Menu Options
-    QPushButton *       mDashboardBtn;
-    QPushButton *       mPortfoliosBtn;
-    QPushButton *       mBudgettingBtn;
-    QPushButton *       mTickersBtn;
-    QPushButton *       mResourcesBtn;
-    QPushButton *       mSettingsBtn;
-
-    // Displays
-    DashboardDisplay *  mDashboardDisplay;
-    PortfolioDisplay *  mPortfolioDisplay;
-    BudgettingDisplay * mBudgettingDisplay;
-    TickerDisplay *     mTickerDisplay;
-    ResourcesDisplay *  mResourcesDisplay;
-    SettingsDisplay *   mSettingsDisplay;
-
-    // Donate
-    QWidget *           mDonateWidget;
-    QPushButton *       mDonateBtn;
-
-
-    // Record Current Menu Selection
-    QPushButton *       mSelectedOption;
+private Q_SLOTS:
+    void about(void);
+    void settings(void);
 };
 
 #endif // MAINWINDOW_H
